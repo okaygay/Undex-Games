@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            border: 2px solid #333;
+        }
+
+        td {
+            width: 100px;
+            height: 100px;
+            text-align: center;
+            font-size: 36px;
+            border: 1px solid #777;
+            cursor: pointer;
+        }
+
+        td:hover {
+            background-color: #ddd;
+        }
+
+        #message {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        #back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        #back-button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <a href="Acceuil.html" id="back-button">Accueil</a>
+    <h1>Morpion</h1>
+    <table>
+        <tr>
+            <td onclick="makeMove(this)"></td>
+            <td onclick="makeMove(this)"></td>
+            <td onclick="makeMove(this)"></td>
+        </tr>
+        <tr>
+            <td onclick="makeMove(this)"></td>
+            <td onclick="makeMove(this)"></td>
+            <td onclick="makeMove(this)"></td>
+        </tr>
+        <tr>
+            <td onclick="makeMove(this)"></td>
+            <td onclick="makeMove(this)"></td>
+            <td onclick="makeMove(this)"></td>
+        </tr>
+    </table>
+    <div id="message"></div>
+    <button onclick="resetBoard()">Réinitialiser</button>
+
+    <script>
+        let currentPlayer = "X";
+        let gameBoard = [["", "", ""], ["", "", ""], ["", "", ""]];
+        let gameActive = true;
+
+        function makeMove(cell) {
+            if (cell.textContent === "" && gameActive) {
+                cell.textContent = currentPlayer;
+                const rowIndex = cell.parentElement.rowIndex;
+                const cellIndex = cell.cellIndex;
+                gameBoard[rowIndex][cellIndex] = currentPlayer;
+                checkWin();
+                togglePlayer();
+            }
+        }
+
+        function togglePlayer() {
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+        }
+
+        function checkWin() {
+            const winningCombos = [
+                [[0, 0], [0, 1], [0, 2]],
+                [[1, 0], [1, 1], [1, 2]],
+                [[2, 0], [2, 1], [2, 2]],
+                [[0, 0], [1, 0], [2, 0]],
+                [[0, 1], [1, 1], [2, 1]],
+                [[0, 2], [1, 2], [2, 2]],
+                [[0, 0], [1, 1], [2, 2]],
+                [[0, 2], [1, 1], [2, 0]]
+            ];
+
+            for (const combo of winningCombos) {
+                const [a, b, c] = combo;
+                if (gameBoard[a[0]][a[1]] && gameBoard[a[0]][a[1]] === gameBoard[b[0]][b[1]] && gameBoard[a[0]][a[1]] === gameBoard[c[0]][c[1]]) {
+                    gameActive = false;
+                    document.getElementById("message").textContent = `Le joueur ${currentPlayer} a gagné !`;
+                }
+            }
+
+            if (!gameBoard.flat().includes("") && gameActive) {
+                gameActive = false;
+                document.getElementById("message").textContent = "Match nul !";
+            }
+        }
+
+        function resetBoard() {
+            gameBoard = [["", "", ""], ["", "", ""], ["", "", ""]];
+            currentPlayer = "X";
+            gameActive = true;
+            document.querySelectorAll("td").forEach(cell => cell.textContent = "");
+            document.getElementById("message").textContent = "";
+        }
+    </script>
+</body>
+</html>

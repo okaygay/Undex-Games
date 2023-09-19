@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man Map</title>
+    <style>
+        body {
+            background-color: black;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #game-container {
+            display: grid;
+            grid-template-columns: repeat(21, 30px);
+            grid-template-rows: repeat(15, 30px);
+            gap: 1px;
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            background-color: blue;
+            border: 1px solid black;
+        }
+
+        .pacman {
+    background-color: yellow;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    transform-origin: center;
+    transition: transform 0.1s;
+    left: 1; /* Ajout de la position horizontale initiale */
+    top: 1; /* Ajout de la position verticale initiale */
+}
+
+
+        /* Exemple de mur */
+        .wall {
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+
+    <script>
+const gameContainer = document.getElementById("game-container");
+const pacman = document.createElement("div");
+pacman.className = "pacman";
+gameContainer.appendChild(pacman);
+
+const map = [
+    "#####################",
+    "#...................#",
+    "#.###.###.###.###.#.#",
+    "#.#...#...#...#...#.#",
+    "#.###.#.###.###.#.#.#",
+    "#.....#.#...#...#...#",
+    "#.###.#.#.###.###.#.#",
+    "#.#...#.#.#...#...#.#",  
+    "#.###.###.###.###.#.#",
+    "#...................#",
+    "##########P##########", // Position initiale de Pac-Man (ici, au milieu)
+    "#####################",
+];
+
+map.forEach((row, rowIndex) => {
+    row.split("").forEach((cell, columnIndex) => {
+        const cellElement = document.createElement("div");
+        cellElement.className = "cell";
+
+        if (cell === "#") {
+            cellElement.classList.add("wall");
+        } else if (cell === "P") {
+            pacman.style.left = `${columnIndex * 30}px`;
+            pacman.style.top = `${rowIndex * 30}px`;
+        }
+
+        gameContainer.appendChild(cellElement);
+    });
+});
+
+function movePacman(direction) {
+    const currentLeft = parseInt(pacman.style.left, 10);
+    const currentTop = parseInt(pacman.style.top, 10);
+
+    switch (direction) {
+        case "left":
+            pacman.style.left = `${currentLeft - 30}px`;
+            break;
+        case "right":
+            pacman.style.left = `${currentLeft + 30}px`;
+            break;
+        case "up":
+            pacman.style.top = `${currentTop - 30}px`;
+            break;
+        case "down":
+            pacman.style.top = `${currentTop + 30}px`;
+            break;
+    }
+}
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+        movePacman("left");
+    } else if (event.key === "ArrowRight") {
+        movePacman("right");
+    } else if (event.key === "ArrowUp") {
+        movePacman("up");
+    } else if (event.key === "ArrowDown") {
+        movePacman("down");
+    }
+});
+    </script>
+</body>
+</html>

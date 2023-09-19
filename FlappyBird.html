@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <style>
+        body {
+            background-color: #4ec0ca;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #bird {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            transform: translateY(-50%);
+        }
+
+        #bird img {
+            width: 100%;
+            height: 100%;
+        }
+
+        #ground {
+            width: 100%;
+            height: 50px;
+            background-color: green;
+            position: absolute;
+            bottom: 0;
+        }
+
+        .pipe {
+            position: absolute;
+            width: 50px;
+            background-color: #1e272e;
+            height: 150px;
+        }
+
+        .pipeTop {
+            top: 0;
+        }
+
+        .pipeBottom {
+            bottom: 0;
+        }
+
+        #homeButton {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #homeButton:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <button id="homeButton">Accueil</button>
+    <div id="bird">
+        <img src="flappy.png" alt="Flappy Bird">
+    </div>
+    <div id="ground"></div>
+
+    <script>
+        const bird = document.getElementById("bird");
+        const ground = document.getElementById("ground");
+        const pipes = [];
+        let birdTop = 200;
+        let gravity = 2;
+        let isJumping = false;
+        let gameInterval;
+
+        function jump() {
+            if (!isJumping) {
+                birdTop -= 30;
+                isJumping = true;
+            }
+        }
+
+        function createPipe() {
+            const pipeHeight = Math.random() * 200 + 50; // Hauteur aléatoire pour le tube
+            const pipeTop = document.createElement("div");
+            pipeTop.classList.add("pipe", "pipeTop");
+            pipeTop.style.height = pipeHeight + "px";
+            pipeTop.style.left = "500px"; // Position initiale
+            document.body.appendChild(pipeTop);
+
+            const pipeBottomHeight = 400 - pipeHeight; // Hauteur du tube inférieur
+            const pipeBottom = document.createElement("div");
+            pipeBottom.classList.add("pipe", "pipeBottom");
+            pipeBottom.style.height = pipeBottomHeight + "px";
+            pipeBottom.style.left = "500px"; // Position initiale
+            document.body.appendChild(pipeBottom);
+
+            pipes.push(pipeTop, pipeBottom);
+        }
+
+        function gameLoop() {
+            birdTop += gravity;
+            bird.style.top = birdTop + "px";
+
+            if (birdTop < 0) {
+                birdTop = 0;
+            }
+
+            if (birdTop + bird.clientHeight > ground.offsetTop) {
+                // Game over (collision with the ground)
+                clearInterval(gameInterval);
+                alert("Game Over");
+                location.reload();
+            }
+
+            // Vérifie la collision avec les tubes
+            for (let i = 0; i < pipes.length; i += 2) { // Les tubes sont ajoutés par paire
+                const pipeTop = pipes[i];
+                const pipeBottom = pipes[i + 1];
+                const pipeLeft = parseInt(pipeTop.style.left);
+
+                if (pipeLeft < -50) {
+                    // Supprime les tubes qui sortent de l'écran
+                    pipes.splice(i, 2);
+                    document.body.removeChild(pipeTop);
+                    document.body.removeChild(pipeBottom);
+                    i -= 2;
+                } else {
+                    pipeTop.style.left = (pipeLeft - 2) + "px";
+                    pipeBottom.style.left = (pipeLeft - 2) + "px";
+                }
+
+                // Vérifie la collision avec les tubes
+                if (birdTop < pipeTop.clientHeight && birdTop + bird.clientHeight > pipeTop.clientHeight &&
+                    pipeLeft < 50 && pipeLeft + pipeTop.clientWidth > 0) {
+                    clearInterval(gameInterval);
+                    alert("Game Over");
+                    location.reload();
+                }
+            }
+
+            isJumping = false; // Réinitialise le saut
+        }
+
+        const homeButton = document.getElementById("homeButton");
+        homeButton.addEventListener("click", function () {
+            window.location.href = "Acceuil.html"; // Redirige vers la page d'accueil
+        });
+
+        document.addEventListener("keydown", jump);
+        gameInterval = setInterval(gameLoop, 20);
+        setInterval(createPipe, 3000); // Crée un nouveau tube toutes les 3 secondes
+    </script>
+</body>
+</html>
